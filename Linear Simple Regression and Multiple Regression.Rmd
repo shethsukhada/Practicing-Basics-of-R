@@ -1,0 +1,87 @@
+---
+title: "assignment2a"
+output: html_document
+---
+
+```{r}
+#install.packages("car")
+
+#install.packages("reshape2")
+
+#install.packages("lm.beta")
+
+library(car); library(reshape2)
+library(ggplot2); library(lm.beta)
+
+data(Salaries)
+str(Salaries)
+```
+
+
+```{r}
+class(Salaries$sex)
+ggplot(data=Salaries,aes(x=yrs.service,y=salary,color=rank)) +  geom_point() +  geom_smooth(method="lm",size=1.1,se=F)
+```
+
+
+```{r}
+model1 = lm(salary~sex , Salaries)
+```
+
+
+```{r}
+ggplot(data=Salaries,aes(x=salary,color=sex))+
+  geom_density(size=1.2)
+```
+
+
+```{r}
+summary(model1)
+```
+
+
+```{r}
+model2 = lm(salary~rank+yrs.since.phd+yrs.service+sex,Salaries)
+```
+
+
+```{r}
+summary(model2)
+```
+
+
+```{r}
+ggplot(data=Salaries,aes(x=salary,color=rank))+
+  geom_density(size=1.2)
+```
+
+
+```{r}
+pred = predict(model2)
+#pred
+```
+
+
+```{r}
+sse = sum((pred - Salaries$salary)^2)
+sse
+sst6 = sum((mean(Salaries$salary) - Salaries$salary)^2)
+```
+
+
+```{r}
+1- sse/sst6
+str(Salaries)
+```
+
+
+```{r}
+pred = predict(model2)
+data.frame(salaryy = Salaries$salary[1:10],predictions = pred[1:10])
+
+newdata = data.frame(rank = 'Prof', yrs.since.phd=11, yrs.service=10 ,  sex = 'Male')
+predict(model2, newdata) 
+```
+
+
+```{r}

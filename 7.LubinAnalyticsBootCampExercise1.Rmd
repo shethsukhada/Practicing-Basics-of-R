@@ -1,0 +1,367 @@
+---
+title: "Linear Regression"
+author: Vishal Lala
+output:
+  html_document: 
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cerulean
+    highlight: haddock
+    df_print: paged
+  prettydoc::html_pretty:
+    theme: cayman
+    toc: true
+    df_print: paged
+  tufte::tufte_handout: default
+  ioslides_presentation: default
+  html_vignette: default
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    highlight: haddock
+  beamer_presentation: default
+---
+
+# Explore Data
+
+## Structure
+
+### Vector
+Create a vector called income.
+```{r}
+set.seed(617)
+income = round(runif(n = 10,min = 50000,max = 80000)/1000)*1000
+income
+#round(runif(n = 10,min = 50000,max = 80000)/1000)*10000
+```
+
+Here are a set of functions to explore income. 
+class(), length(), max, which.max() 
+
+Use above functions to answer the following questions about income
+
+What is the class of income? 
+```{r}
+class(income)
+length(income)
+max(income)
+which.max(income)
+which.min(income)
+```
+
+How many elements does income contain?
+
+```{r}
+length(income)
+```
+
+What is the position of the maximum value in income?
+```{r}
+which.max(income)
+```
+which.max(income)
+
+### Data Frame
+Create a dataframe called df
+```{r}
+id = 1:10
+set.seed(617)
+age = round(runif(n=10,min = 25,max = 35))
+set.seed(617)
+gender = sample(c('Male','Female'),size=10,replace=T)
+set.seed(617)
+income = round(runif(n = 10,min = 50000,max = 80000)/1000)*1000
+df = data.frame(id, age, gender, income)
+```
+
+Use the following functions to explore df
+head(df)
+nrow(df); ncol(df); dim(df)
+names(df)
+str(df)
+View(df)
+
+Display the first six elements in df.
+```{r}
+head(df)
+tail(df)
+nrow(df)
+ncol(df)
+dim(df)
+names(df)
+str(df)
+```
+
+
+List all the column names in df
+```{r}
+names(df)
+```
+
+Explore structure of df
+```{r}
+str(df)
+
+```
+
+## Subsetting
+Examine the results from the following subsetting operations on income
+income[2]
+income[c(1,3)]
+income[-c(1,3)]
+
+```{r}
+income[2]
+income[c(1,3)]
+income[-c(1,3)]
+```
+
+Examine the results from the following subsetting operations on df
+df[1,1]
+df[1,4]
+df[c(1,2),3]
+df[,4]
+df[,c(1,4)]
+
+```{r}
+
+df[1,1]
+df[1,4]
+df[c(1,2),3]
+df[,4]
+df[,c(1,4)]
+
+
+
+```
+
+Fix the errors in the following subsetting operations
+df(3)
+```{r}
+df[3]
+```
+
+income[3,4]
+```{r}
+income[c(3,4)]
+```
+
+df(4,4)
+```{r}
+df[4,4]
+
+```
+
+df[2,3,4]
+```{r}
+df[c(2,3),4]
+
+```
+
+df$income(2)
+```{r}
+df$income[2]
+```
+
+## Logical Tests
+
+### Basic Tests
+For an element, what do you expect from the following?
+4 == 5
+4 > 5
+4 != 5
+
+```{r}
+4 == 5
+4 > 5
+4 != 5
+```
+
+Now, for a vector, what do you expect?
+1:5 == 5
+1:5 > 5
+1:5 != 5
+```{r}
+1:5 == 5
+1:5 > 5
+which(1:5 == 5)
+1:5 != 5
+```
+
+What do you expect from the following?
+c(0, 1, 0, 1) == T
+c('Vishal', 'Rohan', 'Nikhil') == 'Nikhil'
+
+```{r}
+c(0, 1, 0, 1) == T
+c('Vishal', 'Rohan', 'Nikhil') == 'Nikhil'
+```
+
+### Sample Data
+Create a set of vectors
+```{r}
+priceCoffee = c(3.49, 3.99,4.99,5.99)
+x = 1:5
+daysofweek = c('Monday','Tuesday','Wednesday','Thursday','Friday')
+```
+
+Now, use logical operators to answer the following questions
+Is there a coffee priced at $3 or less?
+```{r}
+priceCoffee = c(3.49, 3.99,4.99,5.99)
+as.logical(sum(priceCoffee < 3 ))
+any(priceCoffee < 3)
+min(priceCoffee) <= 3
+
+```
+Is there a coffee priced at exactly $3.49?
+```{r}
+as.logical(sum(priceCoffee == 3.49 ))
+any(priceCoffee == 3.49)
+```
+Is x less than 4 and more than 2?
+```{r}
+#install.packages('ggplot2')
+library(ggplot2)
+data("diamonds")
+str(diamonds)
+
+```
+Is ‘Sunday’ one of the daysofweek?
+```{r}
+
+```
+
+### Diamonds Data
+Load the diamonds dataset that ships with ggplot2
+```{r}
+library(ggplot2)
+data(diamonds)
+```
+Now, use logical tests to answer the following.
+
+How many diamonds are priced under $1000? (price is contained in the column price for the dataset diamonds)
+```{r}
+sum(diamonds$'price' < 1000)
+table(diamonds$price<1000)
+
+```
+
+How many diamonds have x of 0? (x is contained in the column x for the dataset diamonds)
+```{r}
+table(diamonds$x==0)
+
+```
+
+Which diamonds have a price of $0? (price is contained in the column price for the dataset diamonds)
+```{r}
+which(diamonds$price == 0)
+```
+
+How many diamonds have a carat size greater than 4? (carat size is contained in the column carat in the dataset diamonds)
+```{r}
+sum(diamonds$carat >4 )
+```
+
+Does the dataset contain a diamond with a carat size of 7 or 8? (carat size is contained in the column carat in the dataset diamonds) [This is a tough one!]
+```{r}
+any(diamonds$carat > 7 )
+any( diamonds$carat > 8 )
+
+```
+
+# Read Data
+setwd('c:/myfiles/thatAwesomeClass/')
+data = read.csv('data.csv')
+```{r}
+
+```
+
+# Data Summarization
+## Descriptive Measures
+
+Examine measures of central tendency, and dispersion for diamonds. 
+Measures of central tendency: mean(); median()
+Measures of dispersion: range; max() - min(); sd(); var()
+
+What is the average price of diamonds? 
+```{r}
+mean(diamonds$price)
+```
+What is the standard deviation for the price of a diamonds? 
+```{r}
+
+sd(diamonds$price)
+```
+
+What is the range of prices for diamonds?
+```{r}
+range(diamonds$price)
+```
+
+
+## Crosstabs
+To create a table or crosstab of counts, use table()
+For a crosstab that summarizes on some function, use tapply()
+
+In the dataset, how many diamonds of each color are present? What about cut?
+```{r}
+table(diamonds$color)
+```
+What is the average price of diamonds of each color? 
+```{r}
+tapply(X = diamonds$price , INDEX =diamonds$color , FUN =  'mean')
+
+```
+
+Similarly, what is the average price of diamonds of each cut? 
+```{r}
+
+tapply(X = diamonds$price , INDEX =diamonds$cut , FUN =  'mean')
+```
+
+## Visual Summary
+* Data  
+* Aesthetic mapping (aes)  
+
+  + Describes how variables are mapped onto graphical attributes  
+  + Visual attribute of data including x-y axes, color, fill, shape, and alpha  
+* Geometric objects (geom)  
+
+  + Determines how values are rendered graphically, as bars (geom_bar), scatterplot (geom_point), line (geom_line), etc. 
+
+Examine distribution of price by constructing a histogram
+```{r}
+library(ggplot2)
+ggplot(data=diamonds, aes(x=price))+
+  geom_histogram()
+```
+
+Distribution of price as a density curve
+```{r}
+ggplot(data=diamonds, aes(x=price))+
+  geom_density()
+```
+Compare distribution of diamonds by cut.
+```{r}
+ggplot(data=diamonds, aes(x=price, color=cut))+
+  geom_density(size=1.2)
+```
+
+Construct a bar chart to compare diamond price by cut?
+```{r}
+ggplot(data=diamonds, aes(x=cut, y=price, fill=cut))+
+  geom_bar(position='dodge', stat='summary',fun.y='mean')+
+  coord_flip()
+```
+
+Finally, examine relationship between price and carat using a scatterplot
+
+```{r}
+ggplot(data=diamonds, aes(x=carat,y=price))+
+  geom_point(color='steelblue', size=0.8)
+
+#install.packages('contrib.url')
+
+```

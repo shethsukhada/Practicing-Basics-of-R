@@ -1,0 +1,476 @@
+---
+title: "Linear Regression"
+author: Vishal Lala
+output:
+  html_document: 
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cerulean
+    highlight: haddock
+    df_print: paged
+  prettydoc::html_pretty:
+    theme: cayman
+    toc: true
+    df_print: paged
+  tufte::tufte_handout: default
+  ioslides_presentation: default
+  html_vignette: default
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    highlight: haddock
+  beamer_presentation: default
+---
+
+# Data Description
+Wages dataset is a simulated dataset based on a real dataset published in Data Analysis using Regression and Multilevel/Hierarchical Models by Andrew Gelman and Jennifer Hill
+
+Data consists of characteristics of a set of employees and their annual earning. Variables included are: 
+
+* earn: Annual earning in dollars  
+* height: Height in inches  
+* gender: Gender (male, female)  
+* race: african-american, asian, hispanic, white  
+* ed: Years of education  
+* age: Age in years  
+
+# Read Data
+You must read the data before trying to run code on your own machine. To read data use the following code after setting your working directory. To set your working directory, modify the following to set the file path for the folder where the data file resides.
+setwd('c:/thatawesomeclass/clusterAnalysis/)
+
+To find your working directory, 
+For Windows: With Shift pressed, right click on file. Select “Copy as Path”
+For Mac: Right click on file and press Option. Select “Copy xxx as Pathname”
+
+# "C:\Users\sheth\Documents\Masters\Fall2019\Lubin Bootcamp\13.wages.csv"
+```{r echo=FALSE}
+setwd('C:/Users/sheth/Documents/Masters/Fall2019/Lubin_Bootcamp')
+```
+
+```{r, warning=F,message=F}
+wages = read.csv('13wages.csv')
+head(wages)
+
+```
+
+# Explore Data
+Explore Data using functions such as str(), summary(), head()
+```{r, warning=F,message=F}
+str(wages)
+library(ggplot2)
+ggplot(data = wages, aes(x=earn))+
+  geom_histogram(binwidth = 5000)
+
+
+
+
+
+```
+
+## Examine distribution of Earn
+Construct a histogram using ggplot2 and set binwidth to 5000
+```{r, warning=F,message=F}
+library(ggplot2)
+
+sum(wages$earn < 0)
+wages = wages[wages$earn > 0 ,]
+str(wages)
+sum(wages$earn < 0)
+
+```
+
+# Clean data
+
+## Remove negative earn
+Does anyone have a negative value for earn? How many?
+Remove any meaningless values of earn and save it to the wages dataframe. 
+```{r, warning=F,message=F}
+
+#wages =  
+```
+
+## Examine outliers
+```{r, warning=F,message=F}
+ggplot(data=wages,aes(x='',y=earn))+
+  geom_boxplot(outlier.color='red',outlier.alpha=0.5, fill='cadetblue')+
+  geom_text(aes(x='',y=median(wages$earn),label=median(wages$earn)),size=3,hjust=11)+
+  xlab(label = '')
+```
+  
+# Model 1, Simple Regression: earn = f(age)
+
+## Visualize  
+A scatterplot is the best way to visualize a relationship between two numeric variables. Construct a scatterplot between earn and age, and zoom the chart to focus on those with earn less than $200,000. Is there a discernible trend?
+```{r, warning=F,message=F}
+
+ggplot(data=wages, aes(x=age , y=earn) )+
+  geom_point(color='steelblue')+
+  coord_cartesian(ylim=c(0,200000))
+
+```
+
+Construct a straight line that tracks the trend of the points?
+```{r}
+ggplot(data=wages, aes(x=age , y=earn) )+
+  geom_point(color='steelblue')+
+  geom_smooth(method='lm',size=1.2,color='tomato')+
+  coord_cartesian(ylim=c(0,200000))
+```
+
+## Correlation  
+Is there a correlation between earn and age
+```{r}
+cor(wages$earn,wages$age)
+```
+
+
+## Estimate
+Now, construct a regression model with age as predictor and earn as outcome. Call this `model1` What is the regression equation?
+```{r, warning=F,message=F}
+
+model1 = lm(earn~age , wages)
+
+
+
+
+```
+
+## Prediction
+Examine predictions from the model. 
+```{r}
+pred = predict(model1)
+data.frame(earn=wages$earn[1:10],predictions = pred[1:10])
+
+```
+
+How do the predictions compare to the values of earn in the data?
+```{r}
+
+sse1 = sum((pred - wages$earn )^2)
+sst1 = sum((mean(wages$earn) - wages$earn )^2)
+1 - sse1/sst1   #this r^2
+rmse1 = sqrt(mean((pred - wages$earn)^2)) #this 
+rmse1
+```
+
+Quantify the quality of predictions by computing the sum of squared errors for model1.
+```{r}
+
+```
+
+How do the sum of squared errors (sse1) compare to the sum of squares total (sst1)? Specifically, compute model1_r2 as 1 - sse1/sst1.
+```{r}
+
+```
+
+Finally, compute root means squared error (rmse1)
+```{r}
+
+```
+
+
+Examine summary for model1
+```{r}
+summary(model1)
+
+```
+#earn = 53694.4  + 257.7 * age
+
+
+## Inference  
+Does age influence earn?   
+What would be the wage of a 35 year old person?
+One can answer this question by manually substituting 35 in the regression equation.
+```{r, warning=F,message=F}
+# 
+
+```
+
+However, a better alternative is to use the `predict` function
+```{r, warning=F,message=F}
+
+predict(model1, newdata = data.frame(age=45)) - predict(model1, newdata = data.frame(age=35))
+```
+
+How much more would a 45 year old than a 35 year old? Generally speaking, what would a 10 year increase in age do to one's wage
+
+
+# Model 2, Simple Regression: earn = f(height)
+
+## Visualize
+Construct a scatterplot to map the relationship between height and earn. As above, zoom the chart to focus on those with earn less than $200,000.
+```{r, warning=F,message=F}
+
+```
+
+## Estimate
+Construct a regression model to predict earn using height. Call this model2. What is the regression equation?
+```{r, warning=F,message=F}
+
+```
+
+## Prediction
+Examine the model summary to evaluate R2
+```{r, warning=F,message=F}
+
+```
+
+Examine predictions. Compute Sum of Squared Errors. Call it sse2. Also, compute rmse2.
+```{r, warning=F,message=F}
+
+```
+
+
+## Inference  
+Does height influence earn?  
+```{r, warning=F,message=F}
+
+
+ggplot(data=wages, aes(x=height , y=earn) )+
+  geom_point(color='steelblue')+
+  geom_smooth(method='lm',size=1.2,color='tomato')+
+  coord_cartesian(ylim=c(0,200000))
+
+```
+
+What impact will a two inch increase in height have on your wage?  
+```{r, warning=F,message=F}
+model2 = lm(earn~height, wages)
+summary(model2)
+
+```
+
+## How much will a six foot person earn (all else being equal)?
+```{r, warning=F,message=F}
+
+```
+
+# Model 3, Simple Regression (Categorical Predictor): earn = f(gender)  
+Next, do you think earning is influenced by gender?
+
+How many men and women are in this sample?
+```{r}
+
+```
+
+
+## Visualize
+Simple Regression with a Categorical Variable. When exploring the relationship with a categorical variable, a scatterplot is not an option. Bar chart makes more sense.  
+```{r, warning=F,message=F}
+
+```
+
+## Estimate  
+Now, construct and interpret a simple regression using gender as predictor. Note gender is a categorical variable
+```{r, warning=F,message=F}
+
+```
+
+## Prediction
+Evaluate the predictive power of gender. Examine R2 and compute SSE.
+```{r, warning=F,message=F}
+
+```
+
+## Inference  
+Do females earn more than males? What is the difference?
+
+View results using anova table
+```{r, warning=F,message=F}
+
+```
+
+Visualizing data can show things that the indices may not reveal. Dig deeper by plotting a density plot to contrast distribution of earn for males and females. What do you find?
+```{r, warning=F,message=F}
+
+```
+
+# Model 4, Simple Regression (categorical predictor): earn = f(race)
+
+Examine the characteristics of the variable race
+```{r}
+
+```
+
+## Visualize Relationship  
+Examine relationship between race and earn. Since race (like gender) is also a categorical variable, we will use a bar chart.
+```{r, warning=F,message=F}
+
+```
+
+## Estimate Model
+```{r, warning=F,message=F}
+
+```
+
+
+## Prediction
+Examine the R2 and sse for this model. 
+```{r}
+
+```
+
+
+```{r, warning=F,message=F}
+
+
+```
+
+## Inference  
+Does race influence earn?  
+On average, how much do those with race "african-american" earn   
+If race influenced earn, who would you say earns more, whites or asian and what is the difference?  
+
+
+# Model 5, Multiple Regression: earn = f(height, gender)
+Examine the effects of height and gender on earn
+## Estimate
+```{r, warning=F,message=F}
+
+```
+
+
+## Prediction
+Examine R2. Compute SSE
+```{r}
+
+```
+
+
+```{r, warning=F,message=F}
+
+```
+
+How do the prediction metrics for multiple regression compare to those for simple regressions using just height or gender. 
+
+
+## Inference  
+Does height have an effect on earn? Does gender have an effect on earn?  
+What is the effect of a 4 inch height difference on earn, while holding gender constant?   
+```{r, warning=F,message=F}
+
+```
+
+Which variable is a stronger predictor?  
+```{r, warning=F,message=F}
+# install.packages('lm.beta')
+# library(lm.beta)
+# lm.beta(model5)
+```
+
+
+# Model 6, Multiple Regression: earn = f(height, gender, race, ed, age)
+
+## Estimate
+```{r, warning=F,message=F}
+
+```
+
+## Prediction
+```{r, warning=F,message=F}
+
+```
+
+## Inference  
+Interpret individual Coefficients  
+```{r, warning=F,message=F}
+
+```
+
+Sometimes we want to compare effect of variables  
+```{r, warning=F,message=F}
+
+```
+
+Based on the model, how much will a 22 year old, 64 inches tall, White Female with 16 yrs of ed earn?
+```{r}
+
+```
+
+# Model 7: Multiple Regression with Interactions; Power Functions
+
+Test out second order and third order interactions; Try second degree polynomials
+## Estimate
+```{r, warning=F,message=F}
+
+```
+
+## Prediction
+```{r, warning=F,message=F}
+
+```
+
+
+## Inference  
+Can you intepret the coefficients?
+```{r, warning=F,message=F}
+
+```
+
+# Model 8: Other Modelling Algorithms
+
+Regression Tree, Bag, Random Forest, Boost, SVM, Deep Learning, ...
+
+## Estimate
+```{r}
+
+```
+
+## Prediction
+```{r}
+
+```
+
+## Inference
+```{r}
+
+```
+
+
+
+# Model 9, Multiple Regression: earn = f(height, gender, race, ed, age)  
+
+Evaluating a model using data to estimate it risks overfitting the model to the data used to build it. For this reason, it is best to evaluate the model using a different dataset. Since getting a fresh dataset for evaluating a model may be costly, time consuming and in some cases impossible, it is common to split the data into a train and test sample, estimating the model using the train and evaluating it using the test. 
+
+Split data in a 70:30 ratio such that 70% of the observations go to the train sample and the remaining 30% to the test sample. 
+
+```{r, warning=F,message=F}
+
+```
+
+## Estimate model on train sample
+```{r, warning=F,message=F}
+
+```
+
+## Prediction: In-sample
+Here we examine the quality of predictions on the sample used to estimate the model. 
+```{r, warning=F,message=F}
+
+```
+
+## Prediction: Out-of-sample
+Here we examine the quality of predictions on a sample not used to estimate the model. 
+```{r, warning=F,message=F}
+
+```
+
+
+#  Comparing Models
+Gathering results of all the models run.  
+```{r, warning=F, message=F}
+#model = c('model1', 'model2', 'model3', 'model4', 'model5', 'model6', 'model7', 'model8')
+#sse = c(sse1, sse2, sse3, sse4, sse5, sse6, sse7, sse8)
+#rmse = c(rmse1, rmse2, rmse3, rmse4, rmse5, rmse6, rmse7, rmse8)
+#r2 = round(c(model1_r2, model2_r2, model3_r2, model4_r2, model5_r2, model6_r2, model7_r2, model8_r2),4)
+#results = data.frame(model, sse, rmse, r2)
+
+#library(tidyr); library(dplyr)
+#results
+#results%>%
+#  gather(key = metric, value = values,2:4)%>%
+#  ggplot(aes(x=model, y=values))+
+#  geom_bar(stat='identity', fill='cadetblue')+
+#  facet_grid(metric~., scales = 'free_y')
+```
